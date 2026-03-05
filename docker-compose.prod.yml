@@ -6,9 +6,8 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: eventflow-app
     restart: unless-stopped
-    env_file:
-      - backend/.env
     volumes:
+      - ./backend/.env:/app/.env:ro
       - app_storage:/app/storage/app
     depends_on:
       postgres:
@@ -25,9 +24,8 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: eventflow-scheduler
     restart: unless-stopped
-    env_file:
-      - backend/.env
     volumes:
+      - ./backend/.env:/app/.env:ro
       - app_storage:/app/storage/app
     depends_on:
       postgres:
