@@ -1,9 +1,37 @@
+import '@cloudscape-design/global-styles/index.css';
 import '@/styles/public-layout.css';
 import { usePage } from '@inertiajs/react';
+import TopNavigation from '@cloudscape-design/components/top-navigation';
 
 export default function PublicLayout({ children, isPreview }) {
     const { auth } = usePage().props;
     const user = auth?.user;
+
+    const utilities = user
+        ? [
+              {
+                  type: 'menu-dropdown',
+                  text: `${user.first_name} ${user.last_name}`,
+                  iconName: 'user-profile',
+                  items: [
+                      { id: 'dashboard', text: 'Dashboard', href: '/dashboard' },
+                      { id: 'logout', text: 'Cerrar sesion', href: '/logout' },
+                  ],
+              },
+          ]
+        : [
+              {
+                  type: 'button',
+                  text: 'Iniciar sesion',
+                  href: '/login',
+              },
+              {
+                  type: 'button',
+                  variant: 'primary-button',
+                  text: 'Crear cuenta',
+                  href: '/register',
+              },
+          ];
 
     return (
         <div className="public-layout">
@@ -13,43 +41,23 @@ export default function PublicLayout({ children, isPreview }) {
                 </div>
             )}
 
-            <header className="public-header">
-                <a href="/" className="public-header__logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 8, verticalAlign: 'middle', color: '#ec7211' }}>
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                    </svg>
-                    BuilderApp
-                </a>
-                <nav className="public-header__nav">
-                    {user ? (
-                        <>
-                            <span className="public-header__user">{user.first_name} {user.last_name}</span>
-                            <a href="/dashboard" className="public-header__link public-header__link--primary">
-                                Dashboard
-                            </a>
-                        </>
-                    ) : (
-                        <>
-                            <a href="/login" className="public-header__link">
-                                Iniciar sesion
-                            </a>
-                            <a href="/register" className="public-header__link public-header__link--primary">
-                                Crear cuenta
-                            </a>
-                        </>
-                    )}
-                </nav>
-            </header>
+            <TopNavigation
+                identity={{
+                    href: '/',
+                    title: 'BuilderApp',
+                }}
+                utilities={utilities}
+            />
 
-            <main className="public-main">
-                {children}
-            </main>
+            <main className="public-main">{children}</main>
 
             <footer className="public-footer">
                 <div className="public-footer__inner">
                     <div className="public-footer__brand">
                         <span className="public-footer__logo">BuilderApp</span>
-                        <p className="public-footer__tagline">La plataforma para crear y gestionar eventos de tecnologia.</p>
+                        <p className="public-footer__tagline">
+                            La plataforma para crear y gestionar eventos de tecnologia.
+                        </p>
                     </div>
                     <div className="public-footer__links">
                         <a href="/login">Iniciar sesion</a>

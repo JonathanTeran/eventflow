@@ -29,13 +29,14 @@ COPY backend/ /app/
 # Install PHP dependencies (production)
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-# Install Node.js for Vite build
+# Install Node.js, build assets, then remove Node.js (not needed at runtime)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
+    && npm ci && NODE_OPTIONS="--max-old-space-size=1024" npm run build \
+    && rm -rf node_modules \
+    && apt-get purge -y nodejs \
+    && apt-get autoremove -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install npm dependencies and build assets (increase memory for low-RAM servers)
-RUN npm ci && NODE_OPTIONS="--max-old-space-size=1024" npm run build && rm -rf node_modules
 
 # PHP OPcache configuration for production
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
@@ -49,8 +50,9 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Download FrankenPHP binary during build (avoid downloading at runtime)
-RUN php artisan octane:install --server=frankenphp --no-interaction 2>/dev/null || true
+# Symlink the FrankenPHP binary from the base image so Octane finds it
+# (avoids downloading ~58MB binary at runtime)
+RUN ln -sf /usr/local/bin/frankenphp /app/frankenphp
 
 # Supervisor config for Octane + Queue Worker + Reverb
 COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf

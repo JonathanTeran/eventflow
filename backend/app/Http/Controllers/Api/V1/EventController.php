@@ -62,8 +62,8 @@ class EventController extends Controller
                 'speakers' => fn ($q) => $q->where('status', 'confirmed')->orderBy('sort_order'),
                 'sponsors' => fn ($q) => $q->whereIn('status', ['confirmed', 'paid'])->orderBy('sort_order'),
                 'sponsors.sponsorLevel:id,name',
-                'agenda' => fn ($q) => $q->orderBy('date')->orderBy('start_time'),
-                'agenda.speaker:id,first_name,last_name,company,job_title,photo_path',
+                'agendaItems' => fn ($q) => $q->orderBy('date')->orderBy('start_time'),
+                'agendaItems.speaker:id,first_name,last_name,company,job_title,photo_path',
                 'communities' => fn ($q) => $q->orderBy('sort_order'),
             ])
             ->firstOrFail();
@@ -131,7 +131,7 @@ class EventController extends Controller
             'sort_order' => $sp->sort_order,
         ]);
 
-        $base['agenda'] = $event->agenda->map(fn ($a) => [
+        $base['agenda'] = $event->agendaItems->map(fn ($a) => [
             'id' => $a->id,
             'speaker_id' => $a->speaker_id,
             'title' => $a->title,
