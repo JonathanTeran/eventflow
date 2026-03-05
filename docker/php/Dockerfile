@@ -49,6 +49,9 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Download FrankenPHP binary during build (avoid downloading at runtime)
+RUN php artisan octane:install --server=frankenphp --no-interaction 2>/dev/null || true
+
 # Supervisor config for Octane + Queue Worker + Reverb
 COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
