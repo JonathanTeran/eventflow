@@ -1,0 +1,110 @@
+services:
+  # Laravel Octane (FrankenPHP) - Production
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: eventflow-app
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    volumes:
+      - app_storage:/app/storage/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - eventflow
+
+  # Scheduler (cron for Laravel)
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: eventflow-scheduler
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    volumes:
+      - app_storage:/app/storage/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    entrypoint: ["sh", "-c", "while true; do php /app/artisan schedule:run --verbose --no-interaction & sleep 60; done"]
+    networks:
+      - eventflow
+
+  # PostgreSQL 16
+  postgres:
+    image: postgres:16-alpine
+    container_name: eventflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-eventflow}
+      POSTGRES_USER: ${DB_USERNAME:-eventflow}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-eventflow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eventflow
+
+  # Redis 7
+  redis:
+    image: redis:7-alpine
+    container_name: eventflow-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eventflow
+
+  # Nginx (reverse proxy + SSL)
+  nginx:
+    image: nginx:alpine
+    container_name: eventflow-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - app_storage:/app/storage/app:ro
+      - /var/www/certbot:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    networks:
+      - eventflow
+
+  # Certbot for SSL auto-renewal
+  certbot:
+    image: certbot/certbot:latest
+    container_name: eventflow-certbot
+    volumes:
+      - /var/www/certbot:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  postgres_data:
+  redis_data:
+  app_storage:
+
+networks:
+  eventflow:
+    driver: bridge

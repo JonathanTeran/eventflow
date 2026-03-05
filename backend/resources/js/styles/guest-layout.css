@@ -1,0 +1,83 @@
+.guest-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.guest-layout__branding {
+    display: none;
+    width: 50%;
+    position: relative;
+    background: linear-gradient(135deg, #0972d3, #033160);
+    overflow: hidden;
+    color: white;
+    padding: 48px;
+}
+
+.guest-layout__branding-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.guest-layout__form-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 24px;
+}
+
+.guest-layout__form-wrapper {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 400px;
+}
+
+.guest-layout__circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.guest-layout__circle--1 {
+    width: 384px;
+    height: 384px;
+    top: -96px;
+    left: -96px;
+}
+
+.guest-layout__circle--2 {
+    width: 288px;
+    height: 288px;
+    top: 33%;
+    right: -80px;
+}
+
+.guest-layout__circle--3 {
+    width: 320px;
+    height: 320px;
+    bottom: -64px;
+    left: 25%;
+}
+
+.guest-layout__feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+@media (min-width: 1024px) {
+    .guest-layout__branding {
+        display: flex;
+    }
+
+    .guest-layout__form-panel {
+        padding: 48px;
+    }
+}

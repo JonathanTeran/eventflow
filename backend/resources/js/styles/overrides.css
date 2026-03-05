@@ -1,0 +1,5 @@
+/* Minimal overrides for Cloudscape in BuilderApp */
+body.awsui {
+    margin: 0;
+    padding: 0;
+}
