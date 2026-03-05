@@ -34,8 +34,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install npm dependencies and build assets
-RUN npm ci && npm run build && rm -rf node_modules
+# Install npm dependencies and build assets (increase memory for low-RAM servers)
+RUN npm ci && NODE_OPTIONS="--max-old-space-size=1024" npm run build && rm -rf node_modules
 
 # PHP OPcache configuration for production
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
