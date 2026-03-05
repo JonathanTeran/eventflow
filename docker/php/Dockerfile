@@ -50,9 +50,9 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Symlink the FrankenPHP binary from the base image so Octane finds it
-# (avoids downloading ~58MB binary at runtime)
-RUN ln -sf /usr/local/bin/frankenphp /app/frankenphp
+# Copy the FrankenPHP binary from the base image so Octane finds it
+# (Octane doesn't follow symlinks — needs a real file to avoid downloading ~58MB at runtime)
+RUN cp /usr/local/bin/frankenphp /app/frankenphp && chmod +x /app/frankenphp
 
 # Supervisor config for Octane + Queue Worker + Reverb
 COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
