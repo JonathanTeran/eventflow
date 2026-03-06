@@ -1,6 +1,6 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import EventLayout from '@/Layouts/EventLayout';
-import { extractDate, extractTime } from '@/utils/formatters';
+import { extractDate } from '@/utils/formatters';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import Form from '@cloudscape-design/components/form';
@@ -13,7 +13,7 @@ import Button from '@cloudscape-design/components/button';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 
-export default function AgendaCreate({ event, speakers }) {
+export default function AgendaCreate({ event, speakers, eventStartTime, eventEndTime }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',
@@ -47,11 +47,8 @@ export default function AgendaCreate({ event, speakers }) {
 
     const minDate = extractDate(event.date_start);
     const maxDate = extractDate(event.date_end);
-    const eventStartTime = extractTime(event.date_start);
-    const eventEndTime = extractTime(event.date_end);
-
-    const startTimeConstraint = data.date === minDate && eventStartTime ? `Desde las ${eventStartTime}` : '';
-    const endTimeConstraint = data.date === maxDate && eventEndTime ? `Hasta las ${eventEndTime}` : '';
+    const startTimeConstraint = data.date === minDate && eventStartTime && eventStartTime !== '00:00' ? `Desde las ${eventStartTime}` : '';
+    const endTimeConstraint = data.date === maxDate && eventEndTime && eventEndTime !== '00:00' ? `Hasta las ${eventEndTime}` : '';
 
     function isDateEnabled(date) {
         const pad = (n) => String(n).padStart(2, '0');

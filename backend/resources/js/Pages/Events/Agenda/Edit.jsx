@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import EventLayout from '@/Layouts/EventLayout';
-import { extractDate, extractTime } from '@/utils/formatters';
+import { extractDate } from '@/utils/formatters';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import Form from '@cloudscape-design/components/form';
@@ -16,7 +16,7 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Box from '@cloudscape-design/components/box';
 import ConfirmModal from '@/Components/ConfirmModal';
 
-export default function AgendaEdit({ event, agendaItem, speakers }) {
+export default function AgendaEdit({ event, agendaItem, speakers, eventStartTime, eventEndTime }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const { data, setData, put, processing, errors } = useForm({
@@ -52,11 +52,8 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
 
     const minDate = extractDate(event.date_start);
     const maxDate = extractDate(event.date_end);
-    const eventStartTime = extractTime(event.date_start);
-    const eventEndTime = extractTime(event.date_end);
-
-    const startTimeConstraint = data.date === minDate && eventStartTime ? `Desde las ${eventStartTime}` : '';
-    const endTimeConstraint = data.date === maxDate && eventEndTime ? `Hasta las ${eventEndTime}` : '';
+    const startTimeConstraint = data.date === minDate && eventStartTime && eventStartTime !== '00:00' ? `Desde las ${eventStartTime}` : '';
+    const endTimeConstraint = data.date === maxDate && eventEndTime && eventEndTime !== '00:00' ? `Hasta las ${eventEndTime}` : '';
 
     function isDateEnabled(date) {
         const pad = (n) => String(n).padStart(2, '0');

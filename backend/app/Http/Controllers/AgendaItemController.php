@@ -47,6 +47,8 @@ class AgendaItemController extends Controller
         return Inertia::render('Events/Agenda/Create', [
             'event' => $event,
             'speakers' => $speakers,
+            'eventStartTime' => substr($event->getRawOriginal('date_start'), 11, 5),
+            'eventEndTime' => substr($event->getRawOriginal('date_end'), 11, 5),
         ]);
     }
 
@@ -75,6 +77,8 @@ class AgendaItemController extends Controller
             'event' => $event,
             'agendaItem' => $agendaItem,
             'speakers' => $speakers,
+            'eventStartTime' => substr($event->getRawOriginal('date_start'), 11, 5),
+            'eventEndTime' => substr($event->getRawOriginal('date_end'), 11, 5),
         ]);
     }
 

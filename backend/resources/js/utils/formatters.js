@@ -84,14 +84,6 @@ export function extractDate(datetimeStr) {
     return match ? match[1] : '';
 }
 
-export function extractTime(datetimeStr) {
-    if (!datetimeStr) return '';
-    const match = String(datetimeStr).match(/(\d{2}):(\d{2})/);
-    if (!match) return '';
-    const time = `${match[1]}:${match[2]}`;
-    return time === '00:00' ? '' : time;
-}
-
 export function formatCurrency(value) {
     if (!value && value !== 0) return '-';
     return new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' }).format(value);
