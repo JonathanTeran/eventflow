@@ -13,9 +13,27 @@ use App\Models\Sponsor;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DemoSeeder extends Seeder
 {
+    private function seedImage(string $directory, int $width, int $height, int $seed): ?string
+    {
+        try {
+            $content = @file_get_contents("https://picsum.photos/seed/bf{$seed}/{$width}/{$height}");
+            if ($content === false) {
+                return null;
+            }
+            $filename = Str::random(40) . '.jpg';
+            $path = "{$directory}/{$filename}";
+            Storage::disk('public')->put($path, $content);
+            return $path;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function run(): void
     {
         // Create super admin (no organization)
@@ -39,6 +57,9 @@ class DemoSeeder extends Seeder
             'secondary_color' => '#4f46e5',
             'is_active' => true,
         ]);
+        if ($logo = $this->seedImage("organizations/{$organization->id}", 400, 400, 1)) {
+            $organization->update(['logo_path' => $logo]);
+        }
 
         // Create admin user
         $admin = User::create([
@@ -76,6 +97,9 @@ class DemoSeeder extends Seeder
             'registration_type' => 'open',
             'status' => 'published',
         ]);
+        if ($cover = $this->seedImage("events/{$devFest->id}", 1200, 630, 10)) {
+            $devFest->update(['cover_image_path' => $cover]);
+        }
 
         // Default sponsor levels for DevFest
         $devFest->sponsorLevels()->createMany([
@@ -161,6 +185,9 @@ class DemoSeeder extends Seeder
             'social_links' => ['twitter' => 'https://twitter.com/danielavega', 'linkedin' => 'https://linkedin.com/in/danielavega'],
             'status' => 'confirmed', 'sort_order' => 1,
         ]);
+        if ($photo = $this->seedImage("events/{$devFest->id}/speakers", 400, 400, 20)) {
+            $speaker1->update(['photo_path' => $photo]);
+        }
 
         $speaker2 = $devFest->speakers()->create([
             'first_name' => 'Roberto', 'last_name' => 'Chen',
@@ -170,6 +197,9 @@ class DemoSeeder extends Seeder
             'social_links' => ['linkedin' => 'https://linkedin.com/in/robertochen', 'website' => 'https://robertochen.dev'],
             'status' => 'confirmed', 'sort_order' => 2,
         ]);
+        if ($photo = $this->seedImage("events/{$devFest->id}/speakers", 400, 400, 21)) {
+            $speaker2->update(['photo_path' => $photo]);
+        }
 
         $speaker3 = $devFest->speakers()->create([
             'first_name' => 'Lucía', 'last_name' => 'Fernández',
@@ -179,6 +209,9 @@ class DemoSeeder extends Seeder
             'social_links' => ['twitter' => 'https://twitter.com/luciafernandez'],
             'status' => 'confirmed', 'sort_order' => 3,
         ]);
+        if ($photo = $this->seedImage("events/{$devFest->id}/speakers", 400, 400, 22)) {
+            $speaker3->update(['photo_path' => $photo]);
+        }
 
         $speaker4 = $devFest->speakers()->create([
             'first_name' => 'Pablo', 'last_name' => 'Martínez',
@@ -188,6 +221,9 @@ class DemoSeeder extends Seeder
             'social_links' => ['twitter' => 'https://twitter.com/pablomartinez', 'website' => 'https://pablom.dev'],
             'status' => 'invited', 'sort_order' => 4,
         ]);
+        if ($photo = $this->seedImage("events/{$devFest->id}/speakers", 400, 400, 23)) {
+            $speaker4->update(['photo_path' => $photo]);
+        }
 
         // DevFest Sponsors
         $oroLevel = $devFest->sponsorLevels()->where('name', 'Oro')->first();
@@ -239,10 +275,48 @@ class DemoSeeder extends Seeder
             'status' => 'published',
         ]);
 
+        if ($cover = $this->seedImage("events/{$meetup->id}", 1200, 630, 11)) {
+            $meetup->update(['cover_image_path' => $cover]);
+        }
+
         $meetup->sponsorLevels()->createMany([
             ['name' => 'Oro', 'sort_order' => 1],
             ['name' => 'Plata', 'sort_order' => 2],
             ['name' => 'Bronce', 'sort_order' => 3],
+        ]);
+
+        // Meetup speakers
+        $meetupSpeaker1 = $meetup->speakers()->create([
+            'first_name' => 'Andrés', 'last_name' => 'Guamán',
+            'email' => 'andres.guaman@example.com', 'company' => 'Banco Guayaquil',
+            'job_title' => 'Tech Lead',
+            'bio' => 'Especialista en Laravel y arquitectura de microservicios. Lidera el equipo de desarrollo digital.',
+            'social_links' => ['linkedin' => 'https://linkedin.com/in/andresguaman'],
+            'status' => 'confirmed', 'sort_order' => 1,
+        ]);
+        if ($photo = $this->seedImage("events/{$meetup->id}/speakers", 400, 400, 30)) {
+            $meetupSpeaker1->update(['photo_path' => $photo]);
+        }
+
+        $meetupSpeaker2 = $meetup->speakers()->create([
+            'first_name' => 'Carla', 'last_name' => 'Espinoza',
+            'email' => 'carla.e@example.com', 'company' => 'Laravel Ecuador',
+            'job_title' => 'Community Lead',
+            'bio' => 'Organizadora de la comunidad Laravel Ecuador y desarrolladora full-stack con 5 años de experiencia.',
+            'social_links' => ['twitter' => 'https://twitter.com/carlaespinoza'],
+            'status' => 'confirmed', 'sort_order' => 2,
+        ]);
+        if ($photo = $this->seedImage("events/{$meetup->id}/speakers", 400, 400, 31)) {
+            $meetupSpeaker2->update(['photo_path' => $photo]);
+        }
+
+        // Meetup agenda
+        $meetup->agendaItems()->createMany([
+            ['speaker_id' => null, 'title' => 'Registro y networking', 'date' => '2026-04-20', 'start_time' => '18:00', 'end_time' => '18:30', 'type' => 'networking', 'sort_order' => 1],
+            ['speaker_id' => $meetupSpeaker1->id, 'title' => 'Laravel 12: Novedades y migración', 'description' => 'Las nuevas features de Laravel 12 y cómo migrar desde versiones anteriores.', 'date' => '2026-04-20', 'start_time' => '18:30', 'end_time' => '19:15', 'location_detail' => 'Sala Principal', 'type' => 'talk', 'sort_order' => 2],
+            ['speaker_id' => null, 'title' => 'Coffee break', 'date' => '2026-04-20', 'start_time' => '19:15', 'end_time' => '19:30', 'type' => 'break', 'sort_order' => 3],
+            ['speaker_id' => $meetupSpeaker2->id, 'title' => 'Testing en Laravel: De cero a héroe', 'description' => 'Estrategias y herramientas para testing efectivo en aplicaciones Laravel.', 'date' => '2026-04-20', 'start_time' => '19:30', 'end_time' => '20:15', 'location_detail' => 'Sala Principal', 'type' => 'talk', 'sort_order' => 4],
+            ['speaker_id' => null, 'title' => 'Cierre y networking', 'date' => '2026-04-20', 'start_time' => '20:15', 'end_time' => '21:00', 'type' => 'networking', 'sort_order' => 5],
         ]);
 
         $hackathon = Event::create([
@@ -258,6 +332,9 @@ class DemoSeeder extends Seeder
             'registration_type' => 'invite',
             'status' => 'published',
         ]);
+        if ($cover = $this->seedImage("events/{$hackathon->id}", 1200, 630, 12)) {
+            $hackathon->update(['cover_image_path' => $cover]);
+        }
 
         $hackathon->sponsorLevels()->createMany([
             ['name' => 'Diamante', 'sort_order' => 1, 'price' => 10000.00, 'benefits' => ['Naming rights', 'Keynote sponsor', 'Acceso a todos los equipos']],
@@ -275,6 +352,9 @@ class DemoSeeder extends Seeder
             'secondary_color' => '#047857',
             'is_active' => true,
         ]);
+        if ($logo = $this->seedImage("organizations/{$org2->id}", 400, 400, 2)) {
+            $org2->update(['logo_path' => $logo]);
+        }
 
         $adminOrg2 = User::create([
             'organization_id' => $org2->id,
@@ -286,7 +366,7 @@ class DemoSeeder extends Seeder
         ]);
         $adminOrg2->assignRole('org_admin');
 
-        Event::create([
+        $techConf = Event::create([
             'organization_id' => $org2->id,
             'name' => 'TechConf 2026',
             'slug' => 'techconf-2026',
@@ -299,8 +379,64 @@ class DemoSeeder extends Seeder
             'registration_type' => 'open',
             'status' => 'published',
         ]);
+        if ($cover = $this->seedImage("events/{$techConf->id}", 1200, 630, 13)) {
+            $techConf->update(['cover_image_path' => $cover]);
+        }
 
-        Event::create([
+        // TechConf speakers
+        $tcSpeaker1 = $techConf->speakers()->create([
+            'first_name' => 'Miguel', 'last_name' => 'Ángel Durán',
+            'email' => 'midudev@example.com', 'company' => 'Independiente',
+            'job_title' => 'Creador de contenido & Developer',
+            'bio' => 'Creador de contenido tech con más de 1M de seguidores. Especialista en JavaScript, React y desarrollo web moderno.',
+            'social_links' => ['twitter' => 'https://twitter.com/midudev', 'website' => 'https://midu.dev'],
+            'status' => 'confirmed', 'sort_order' => 1,
+        ]);
+        if ($photo = $this->seedImage("events/{$techConf->id}/speakers", 400, 400, 40)) {
+            $tcSpeaker1->update(['photo_path' => $photo]);
+        }
+
+        $tcSpeaker2 = $techConf->speakers()->create([
+            'first_name' => 'Natalia', 'last_name' => 'Venditto',
+            'email' => 'natalia.v@example.com', 'company' => 'Microsoft',
+            'job_title' => 'Principal JavaScript Engineer',
+            'bio' => 'Principal engineer en Microsoft Azure. Experta en Node.js, TypeScript y arquitectura de aplicaciones cloud.',
+            'social_links' => ['linkedin' => 'https://linkedin.com/in/nataliavenditto'],
+            'status' => 'confirmed', 'sort_order' => 2,
+        ]);
+        if ($photo = $this->seedImage("events/{$techConf->id}/speakers", 400, 400, 41)) {
+            $tcSpeaker2->update(['photo_path' => $photo]);
+        }
+
+        $tcSpeaker3 = $techConf->speakers()->create([
+            'first_name' => 'Fernando', 'last_name' => 'Herrera',
+            'email' => 'fernando.h@example.com', 'company' => 'DevTalles',
+            'job_title' => 'Senior Instructor',
+            'bio' => 'Instructor de programación con cursos de Flutter, React y Node.js. Más de 500K estudiantes en plataformas educativas.',
+            'social_links' => ['website' => 'https://devtalles.com'],
+            'status' => 'confirmed', 'sort_order' => 3,
+        ]);
+        if ($photo = $this->seedImage("events/{$techConf->id}/speakers", 400, 400, 42)) {
+            $tcSpeaker3->update(['photo_path' => $photo]);
+        }
+
+        // TechConf agenda (3 days)
+        $techConf->agendaItems()->createMany([
+            ['speaker_id' => null, 'title' => 'Apertura TechConf 2026', 'date' => '2026-09-10', 'start_time' => '09:00', 'end_time' => '09:30', 'location_detail' => 'Auditorio Principal', 'type' => 'ceremony', 'sort_order' => 1],
+            ['speaker_id' => $tcSpeaker1->id, 'title' => 'El futuro del desarrollo web', 'description' => 'Tendencias y herramientas que dominarán el desarrollo web en los próximos años.', 'date' => '2026-09-10', 'start_time' => '09:30', 'end_time' => '10:30', 'location_detail' => 'Auditorio Principal', 'type' => 'talk', 'sort_order' => 2],
+            ['speaker_id' => $tcSpeaker2->id, 'title' => 'Node.js a escala: Lecciones de Azure', 'description' => 'Cómo escalar aplicaciones Node.js para millones de usuarios.', 'date' => '2026-09-10', 'start_time' => '11:00', 'end_time' => '12:00', 'location_detail' => 'Auditorio Principal', 'type' => 'talk', 'sort_order' => 3],
+            ['speaker_id' => null, 'title' => 'Almuerzo', 'date' => '2026-09-10', 'start_time' => '12:00', 'end_time' => '14:00', 'type' => 'break', 'sort_order' => 4],
+            ['speaker_id' => $tcSpeaker3->id, 'title' => 'Workshop: Flutter avanzado', 'description' => 'Taller práctico de arquitectura limpia y gestión de estado en Flutter.', 'date' => '2026-09-11', 'start_time' => '09:00', 'end_time' => '12:00', 'location_detail' => 'Sala de Workshops', 'type' => 'workshop', 'sort_order' => 5],
+            ['speaker_id' => null, 'title' => 'Networking & cierre', 'date' => '2026-09-12', 'start_time' => '16:00', 'end_time' => '18:00', 'type' => 'networking', 'sort_order' => 6],
+        ]);
+
+        // TechConf communities
+        $techConf->communities()->createMany([
+            ['name' => 'Vue.js México', 'url' => 'https://vuejs.mx', 'description' => 'Comunidad de Vue.js en México.', 'sort_order' => 1],
+            ['name' => 'React LATAM', 'url' => 'https://reactlatam.dev', 'description' => 'Comunidad de React en Latinoamérica.', 'sort_order' => 2],
+        ]);
+
+        $cloudSummit = Event::create([
             'organization_id' => $org2->id,
             'name' => 'Cloud Summit LATAM 2026',
             'slug' => 'cloud-summit-latam-2026',
@@ -313,8 +449,11 @@ class DemoSeeder extends Seeder
             'registration_type' => 'open',
             'status' => 'published',
         ]);
+        if ($cover = $this->seedImage("events/{$cloudSummit->id}", 1200, 630, 14)) {
+            $cloudSummit->update(['cover_image_path' => $cover]);
+        }
 
-        Event::create([
+        $startupWeekend = Event::create([
             'organization_id' => $org2->id,
             'name' => 'Startup Weekend Medellín',
             'slug' => 'startup-weekend-medellin-2026',
@@ -327,5 +466,8 @@ class DemoSeeder extends Seeder
             'registration_type' => 'open',
             'status' => 'published',
         ]);
+        if ($cover = $this->seedImage("events/{$startupWeekend->id}", 1200, 630, 15)) {
+            $startupWeekend->update(['cover_image_path' => $cover]);
+        }
     }
 }

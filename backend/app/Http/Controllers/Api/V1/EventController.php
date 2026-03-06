@@ -43,7 +43,7 @@ class EventController extends Controller
         $events = Event::withoutGlobalScopes()
             ->whereIn('status', ['published', 'active'])
             ->where('date_end', '>=', now())
-            ->with(['organization:id,name,slug,logo_path,primary_color'])
+            ->with(['organization'])
             ->orderBy('date_start', 'asc')
             ->take(10)
             ->get()
@@ -95,10 +95,9 @@ class EventController extends Controller
                 'id' => $event->organization->id,
                 'name' => $event->organization->name,
                 'slug' => $event->organization->slug,
-                'logo_url' => $event->organization->logo_path
-                    ? url('storage/' . $event->organization->logo_path)
-                    : null,
+                'logo_url' => $event->organization->logo_url,
                 'primary_color' => $event->organization->primary_color,
+                'website' => $event->organization->website,
             ] : null,
         ];
     }
@@ -155,9 +154,7 @@ class EventController extends Controller
             'id' => $c->id,
             'name' => $c->name,
             'url' => $c->url,
-            'logo_url' => $c->logo_path
-                ? url('storage/' . $c->logo_path)
-                : null,
+            'logo_url' => $c->logo_url,
             'description' => $c->description,
         ]);
 
