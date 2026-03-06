@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import EventLayout from '@/Layouts/EventLayout';
+import { toLocalDateStr } from '@/utils/formatters';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import Form from '@cloudscape-design/components/form';
@@ -21,7 +22,7 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
     const { data, setData, put, processing, errors } = useForm({
         title: agendaItem.title || '',
         description: agendaItem.description || '',
-        date: agendaItem.date ? agendaItem.date.slice(0, 10) : '',
+        date: toLocalDateStr(agendaItem.date),
         start_time: agendaItem.start_time || '',
         end_time: agendaItem.end_time || '',
         speaker_id: agendaItem.speaker_id ? String(agendaItem.speaker_id) : '',
@@ -49,11 +50,12 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
         speakerOptions.find((o) => o.value === String(data.speaker_id)) ||
         speakerOptions[0];
 
-    const minDate = event.date_start ? event.date_start.slice(0, 10) : '';
-    const maxDate = event.date_end ? event.date_end.slice(0, 10) : '';
+    const minDate = toLocalDateStr(event.date_start);
+    const maxDate = toLocalDateStr(event.date_end);
 
     function isDateEnabled(date) {
-        const d = date.toISOString().slice(0, 10);
+        const pad = (n) => String(n).padStart(2, '0');
+        const d = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
         return (!minDate || d >= minDate) && (!maxDate || d <= maxDate);
     }
 

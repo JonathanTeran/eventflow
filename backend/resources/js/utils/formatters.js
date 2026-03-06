@@ -66,6 +66,13 @@ export function formatEventDateRange(dateStart, dateEnd) {
     return `${startDateStr} - ${endDateStr}`;
 }
 
+export function toLocalDateStr(datetimeStr) {
+    if (!datetimeStr) return '';
+    const d = parseDate(datetimeStr);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 export function formatCurrency(value) {
     if (!value && value !== 0) return '-';
     return new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' }).format(value);
