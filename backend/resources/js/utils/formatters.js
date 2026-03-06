@@ -73,6 +73,17 @@ export function toLocalDateStr(datetimeStr) {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/**
+ * Extract just the YYYY-MM-DD date portion from a datetime string
+ * WITHOUT timezone conversion. Use for calendar dates (event dates, agenda dates)
+ * where the stored date should be preserved as-is.
+ */
+export function extractDate(datetimeStr) {
+    if (!datetimeStr) return '';
+    const match = String(datetimeStr).match(/^(\d{4}-\d{2}-\d{2})/);
+    return match ? match[1] : '';
+}
+
 export function formatCurrency(value) {
     if (!value && value !== 0) return '-';
     return new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' }).format(value);

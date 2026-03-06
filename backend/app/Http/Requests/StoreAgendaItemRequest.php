@@ -70,8 +70,8 @@ class StoreAgendaItemRequest extends FormRequest
             'date' => [
                 'required',
                 'date',
-                'after_or_equal:' . $this->route('event')->date_start->toDateString(),
-                'before_or_equal:' . $this->route('event')->date_end->toDateString(),
+                'after_or_equal:' . substr($this->route('event')->getRawOriginal('date_start'), 0, 10),
+                'before_or_equal:' . substr($this->route('event')->getRawOriginal('date_end'), 0, 10),
             ],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],

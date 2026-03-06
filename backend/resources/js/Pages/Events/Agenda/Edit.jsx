@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import EventLayout from '@/Layouts/EventLayout';
-import { toLocalDateStr } from '@/utils/formatters';
+import { extractDate } from '@/utils/formatters';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import Form from '@cloudscape-design/components/form';
@@ -22,7 +22,7 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
     const { data, setData, put, processing, errors } = useForm({
         title: agendaItem.title || '',
         description: agendaItem.description || '',
-        date: toLocalDateStr(agendaItem.date),
+        date: extractDate(agendaItem.date),
         start_time: agendaItem.start_time || '',
         end_time: agendaItem.end_time || '',
         speaker_id: agendaItem.speaker_id ? String(agendaItem.speaker_id) : '',
@@ -50,8 +50,8 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
         speakerOptions.find((o) => o.value === String(data.speaker_id)) ||
         speakerOptions[0];
 
-    const minDate = toLocalDateStr(event.date_start);
-    const maxDate = toLocalDateStr(event.date_end);
+    const minDate = extractDate(event.date_start);
+    const maxDate = extractDate(event.date_end);
 
     function isDateEnabled(date) {
         const pad = (n) => String(n).padStart(2, '0');

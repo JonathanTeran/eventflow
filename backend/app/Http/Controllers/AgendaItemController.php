@@ -94,8 +94,8 @@ class AgendaItemController extends Controller
             'date' => [
                 'required',
                 'date',
-                'after_or_equal:' . $event->date_start->toDateString(),
-                'before_or_equal:' . $event->date_end->toDateString(),
+                'after_or_equal:' . substr($event->getRawOriginal('date_start'), 0, 10),
+                'before_or_equal:' . substr($event->getRawOriginal('date_end'), 0, 10),
             ],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
@@ -138,8 +138,8 @@ class AgendaItemController extends Controller
             'date' => [
                 'required',
                 'date',
-                'after_or_equal:' . $event->date_start->toDateString(),
-                'before_or_equal:' . $event->date_end->toDateString(),
+                'after_or_equal:' . substr($event->getRawOriginal('date_start'), 0, 10),
+                'before_or_equal:' . substr($event->getRawOriginal('date_end'), 0, 10),
             ],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
