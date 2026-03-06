@@ -50,9 +50,12 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Copy the FrankenPHP binary from the base image so Octane finds it
-# (Octane doesn't follow symlinks — needs a real file to avoid downloading ~58MB at runtime)
-RUN cp /usr/local/bin/frankenphp /app/frankenphp && chmod +x /app/frankenphp
+# Download the standalone FrankenPHP binary that Octane expects
+# (the base image binary is Caddy+FrankenPHP, Octane needs the standalone worker)
+RUN ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/') && \
+    curl -fsSL -o /app/frankenphp "https://github.com/dunglas/frankenphp/releases/latest/download/frankenphp-linux-${ARCH}" && \
+    chmod +x /app/frankenphp && \
+    /app/frankenphp version
 
 # Supervisor config for Octane + Queue Worker + Reverb
 COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
