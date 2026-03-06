@@ -80,6 +80,36 @@ class StoreAgendaItemRequest extends FormRequest
         ];
     }
 
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            self::validateTimeWithinEvent($validator, $this->route('event'), $this->input('date'), $this->input('start_time'), $this->input('end_time'));
+        });
+    }
+
+    public static function validateTimeWithinEvent($validator, $event, ?string $date, ?string $startTime, ?string $endTime): void
+    {
+        if (! $date || ! $startTime || ! $endTime) {
+            return;
+        }
+
+        $rawStart = $event->getRawOriginal('date_start');
+        $rawEnd = $event->getRawOriginal('date_end');
+
+        $eventStartDate = substr($rawStart, 0, 10);
+        $eventEndDate = substr($rawEnd, 0, 10);
+        $eventStartTime = substr($rawStart, 11, 5);
+        $eventEndTime = substr($rawEnd, 11, 5);
+
+        if ($date === $eventStartDate && $eventStartTime !== '00:00' && $startTime < $eventStartTime) {
+            $validator->errors()->add('start_time', "La hora de inicio no puede ser antes de las {$eventStartTime} (inicio del evento).");
+        }
+
+        if ($date === $eventEndDate && $eventEndTime !== '00:00' && $endTime > $eventEndTime) {
+            $validator->errors()->add('end_time', "La hora de fin no puede ser después de las {$eventEndTime} (fin del evento).");
+        }
+    }
+
     public function messages(): array
     {
         return [

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import EventLayout from '@/Layouts/EventLayout';
-import { extractDate } from '@/utils/formatters';
+import { extractDate, extractTime } from '@/utils/formatters';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import Form from '@cloudscape-design/components/form';
@@ -52,6 +52,11 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
 
     const minDate = extractDate(event.date_start);
     const maxDate = extractDate(event.date_end);
+    const eventStartTime = extractTime(event.date_start);
+    const eventEndTime = extractTime(event.date_end);
+
+    const startTimeConstraint = data.date === minDate && eventStartTime ? `Desde las ${eventStartTime}` : '';
+    const endTimeConstraint = data.date === maxDate && eventEndTime ? `Hasta las ${eventEndTime}` : '';
 
     function isDateEnabled(date) {
         const pad = (n) => String(n).padStart(2, '0');
@@ -128,7 +133,7 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
                                         />
                                     </FormField>
 
-                                    <FormField label="Hora de inicio" errorText={errors.start_time}>
+                                    <FormField label="Hora de inicio" errorText={errors.start_time} constraintText={startTimeConstraint}>
                                         <Input
                                             type="time"
                                             value={data.start_time}
@@ -138,7 +143,7 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
                                         />
                                     </FormField>
 
-                                    <FormField label="Hora de fin" errorText={errors.end_time}>
+                                    <FormField label="Hora de fin" errorText={errors.end_time} constraintText={endTimeConstraint}>
                                         <Input
                                             type="time"
                                             value={data.end_time}

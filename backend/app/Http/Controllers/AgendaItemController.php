@@ -106,6 +106,12 @@ class AgendaItemController extends Controller
             'date.before_or_equal' => 'La fecha debe estar dentro del rango del evento.',
         ]);
 
+        $timeValidator = \Validator::make($request->all(), []);
+        StoreAgendaItemRequest::validateTimeWithinEvent($timeValidator, $event, $request->input('date'), $request->input('start_time'), $request->input('end_time'));
+        if ($timeValidator->errors()->any()) {
+            throw new \Illuminate\Validation\ValidationException($timeValidator);
+        }
+
         $agendaItem->update($validated);
 
         return redirect()->route('events.agenda.index', $event)
@@ -147,6 +153,12 @@ class AgendaItemController extends Controller
             'date.after_or_equal' => 'La fecha debe estar dentro del rango del evento.',
             'date.before_or_equal' => 'La fecha debe estar dentro del rango del evento.',
         ]);
+
+        $timeValidator = \Validator::make($request->all(), []);
+        StoreAgendaItemRequest::validateTimeWithinEvent($timeValidator, $event, $request->input('date'), $request->input('start_time'), $request->input('end_time'));
+        if ($timeValidator->errors()->any()) {
+            throw new \Illuminate\Validation\ValidationException($timeValidator);
+        }
 
         $agendaItem->update($validated);
 
