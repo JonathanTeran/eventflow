@@ -5,6 +5,7 @@ import Header from '@cloudscape-design/components/header';
 import Form from '@cloudscape-design/components/form';
 import FormField from '@cloudscape-design/components/form-field';
 import Input from '@cloudscape-design/components/input';
+import DatePicker from '@cloudscape-design/components/date-picker';
 import Textarea from '@cloudscape-design/components/textarea';
 import Select from '@cloudscape-design/components/select';
 import Button from '@cloudscape-design/components/button';
@@ -42,6 +43,14 @@ export default function AgendaCreate({ event, speakers }) {
     const selectedSpeaker =
         speakerOptions.find((o) => o.value === String(data.speaker_id)) ||
         speakerOptions[0];
+
+    const minDate = event.date_start ? event.date_start.slice(0, 10) : '';
+    const maxDate = event.date_end ? event.date_end.slice(0, 10) : '';
+
+    function isDateEnabled(date) {
+        const d = date.toISOString().slice(0, 10);
+        return (!minDate || d >= minDate) && (!maxDate || d <= maxDate);
+    }
 
     function submit(e) {
         e.preventDefault();
@@ -96,13 +105,17 @@ export default function AgendaCreate({ event, speakers }) {
                             </FormField>
 
                             <ColumnLayout columns={3}>
-                                <FormField label="Fecha" errorText={errors.date}>
-                                    <Input
-                                        type="date"
+                                <FormField
+                                    label="Fecha"
+                                    errorText={errors.date}
+                                    constraintText={minDate && maxDate && minDate !== maxDate ? `Entre ${minDate} y ${maxDate}` : ''}
+                                >
+                                    <DatePicker
                                         value={data.date}
                                         onChange={({ detail }) => setData('date', detail.value)}
-                                        min={event.date_start ? event.date_start.slice(0, 10) : undefined}
-                                        max={event.date_end ? event.date_end.slice(0, 10) : undefined}
+                                        isDateEnabled={isDateEnabled}
+                                        placeholder="YYYY/MM/DD"
+                                        locale="es"
                                     />
                                 </FormField>
 

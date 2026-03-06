@@ -12,6 +12,55 @@ class StoreAgendaItemRequest extends FormRequest
         return $this->user()->can('agenda.create');
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'start_time' => self::normalizeTime($this->start_time),
+            'end_time' => self::normalizeTime($this->end_time),
+        ]);
+    }
+
+    /**
+     * Normalize locale-formatted time (e.g. "09:45 a.m.", "2:30 p. m.") to H:i (24h).
+     */
+    public static function normalizeTime(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        // Strip seconds if present (HH:MM:SS → HH:MM)
+        if (preg_match('/^(\d{1,2}:\d{2}):\d{2}$/', $value, $m)) {
+            $value = $m[1];
+        }
+
+        // Handle 12-hour format with AM/PM (e.g. "9:45 a.m.", "2:30 p. m.")
+        $normalized = preg_replace('/\s+/', ' ', $value); // collapse spaces
+        if (preg_match('/^(\d{1,2}):(\d{2})\s*(a\.?\s*m\.?|p\.?\s*m\.?)$/i', $normalized, $m)) {
+            $hour = (int) $m[1];
+            $minute = $m[2];
+            $period = strtolower(preg_replace('/[\s.]/', '', $m[3])); // "am" or "pm"
+
+            if ($period === 'pm' && $hour < 12) {
+                $hour += 12;
+            } elseif ($period === 'am' && $hour === 12) {
+                $hour = 0;
+            }
+
+            return sprintf('%02d:%s', $hour, $minute);
+        }
+
+        // Already in H:i or HH:MM format
+        if (preg_match('/^\d{1,2}:\d{2}$/', $value)) {
+            $parts = explode(':', $value);
+            return sprintf('%02d:%s', (int) $parts[0], $parts[1]);
+        }
+
+        return $value;
+    }
+
     public function rules(): array
     {
         return [

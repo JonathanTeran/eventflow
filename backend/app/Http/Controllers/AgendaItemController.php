@@ -82,6 +82,11 @@ class AgendaItemController extends Controller
     {
         $this->authorize('update', $event);
 
+        $request->merge([
+            'start_time' => StoreAgendaItemRequest::normalizeTime($request->start_time),
+            'end_time' => StoreAgendaItemRequest::normalizeTime($request->end_time),
+        ]);
+
         $validated = $request->validate([
             'speaker_id' => ['nullable', 'string', Rule::exists('speakers', 'id')],
             'title' => ['required', 'string', 'max:255'],
@@ -123,6 +128,11 @@ class AgendaItemController extends Controller
     public function move(Request $request, Event $event, AgendaItem $agendaItem)
     {
         $this->authorize('update', $event);
+
+        $request->merge([
+            'start_time' => StoreAgendaItemRequest::normalizeTime($request->start_time),
+            'end_time' => StoreAgendaItemRequest::normalizeTime($request->end_time),
+        ]);
 
         $validated = $request->validate([
             'date' => [
