@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Cards from '@cloudscape-design/components/cards';
+import Table from '@cloudscape-design/components/table';
 import Header from '@cloudscape-design/components/header';
 import Button from '@cloudscape-design/components/button';
+import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import TextFilter from '@cloudscape-design/components/text-filter';
 import Select from '@cloudscape-design/components/select';
@@ -12,6 +13,7 @@ import Box from '@cloudscape-design/components/box';
 import Link from '@cloudscape-design/components/link';
 import StatusBadge from '@/Components/StatusBadge';
 import { formatEventDateRange } from '@/utils/formatters';
+import { statusActions } from '@/utils/status-config';
 
 const statusOptions = [
     { value: '', label: 'Todos los estados' },
@@ -66,13 +68,88 @@ export default function EventsIndex({ events, filters, isSuperAdmin }) {
         }
     }
 
+    function changeStatus(eventId, newStatus) {
+        router.patch(`/events/${eventId}/status`, { status: newStatus }, {
+            preserveState: true,
+        });
+    }
+
+    const columnDefinitions = [
+        {
+            id: 'name',
+            header: 'Nombre',
+            cell: (item) => (
+                <Link
+                    onFollow={(e) => {
+                        e.preventDefault();
+                        router.visit(`/events/${item.id}`);
+                    }}
+                >
+                    {item.name}
+                </Link>
+            ),
+            sortingField: 'name',
+        },
+        ...(isSuperAdmin ? [{
+            id: 'organization',
+            header: 'Organización',
+            cell: (item) => item.organization?.name || '-',
+        }] : []),
+        {
+            id: 'status',
+            header: 'Estado',
+            cell: (item) => <StatusBadge status={item.status} />,
+        },
+        {
+            id: 'date',
+            header: 'Fecha',
+            cell: (item) => formatEventDateRange(item.date_start, item.date_end),
+        },
+        {
+            id: 'location',
+            header: 'Ubicación',
+            cell: (item) => item.venue || item.location || '-',
+        },
+        {
+            id: 'actions',
+            header: 'Acciones',
+            cell: (item) => {
+                const actions = statusActions.filter((a) => a.from === item.status);
+                return (
+                    <SpaceBetween direction="horizontal" size="xs">
+                        <ButtonDropdown
+                            items={[
+                                { id: 'view', text: 'Ver detalles' },
+                                { id: 'edit', text: 'Editar' },
+                                ...(actions.length > 0 ? [
+                                    { id: 'divider', text: '-', disabled: true },
+                                    ...actions.map((a) => ({
+                                        id: `status-${a.to}`,
+                                        text: a.label,
+                                    })),
+                                ] : []),
+                            ]}
+                            variant="inline-icon"
+                            onItemClick={({ detail }) => {
+                                if (detail.id === 'view') router.visit(`/events/${item.id}`);
+                                else if (detail.id === 'edit') router.visit(`/events/${item.id}/edit`);
+                                else if (detail.id.startsWith('status-')) changeStatus(item.id, detail.id.replace('status-', ''));
+                            }}
+                        />
+                    </SpaceBetween>
+                );
+            },
+        },
+    ];
+
     return (
         <AuthenticatedLayout>
             <Head title="Eventos" />
-            <Cards
+            <Table
                 header={
                     <Header
                         variant="h1"
+                        counter={`(${events.total || events.data?.length || 0})`}
                         description={isSuperAdmin ? 'Gestiona todos los eventos de la plataforma.' : 'Gestiona todos los eventos de tu organización.'}
                         actions={
                             <Button variant="primary" iconName="add-plus" onClick={() => router.visit('/events/create')}>
@@ -83,47 +160,7 @@ export default function EventsIndex({ events, filters, isSuperAdmin }) {
                         Eventos
                     </Header>
                 }
-                cardDefinition={{
-                    header: (item) => (
-                        <Link
-                            fontSize="heading-m"
-                            onFollow={(e) => {
-                                e.preventDefault();
-                                router.visit(`/events/${item.id}`);
-                            }}
-                        >
-                            {item.name}
-                        </Link>
-                    ),
-                    sections: [
-                        ...(isSuperAdmin ? [{
-                            id: 'organization',
-                            header: 'Organización',
-                            content: (item) => item.organization?.name || '-',
-                        }] : []),
-                        {
-                            id: 'status',
-                            header: 'Estado',
-                            content: (item) => <StatusBadge status={item.status} />,
-                        },
-                        {
-                            id: 'date',
-                            header: 'Fecha',
-                            content: (item) =>
-                                formatEventDateRange(item.date_start, item.date_end),
-                        },
-                        {
-                            id: 'location',
-                            header: 'Ubicación',
-                            content: (item) => item.venue || item.location || '-',
-                        },
-                        {
-                            id: 'capacity',
-                            header: 'Capacidad',
-                            content: (item) => (item.capacity ? `${item.capacity} personas` : '-'),
-                        },
-                    ],
-                }}
+                columnDefinitions={columnDefinitions}
                 items={events.data || []}
                 filter={
                     <SpaceBetween direction="horizontal" size="xs">

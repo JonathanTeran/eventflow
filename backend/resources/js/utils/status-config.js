@@ -21,10 +21,22 @@ export const ticketTypeConfig = {
 
 export const statusActions = [
     { from: 'draft', to: 'published', label: 'Publicar' },
-    { from: 'published', to: 'active', label: 'Activar' },
-    { from: 'active', to: 'completed', label: 'Completar' },
     { from: 'draft', to: 'cancelled', label: 'Cancelar', danger: true },
+    { from: 'published', to: 'active', label: 'Activar' },
+    { from: 'published', to: 'draft', label: 'Volver a borrador' },
     { from: 'published', to: 'cancelled', label: 'Cancelar', danger: true },
+    { from: 'active', to: 'completed', label: 'Completar' },
+    { from: 'active', to: 'cancelled', label: 'Cancelar', danger: true },
+    { from: 'completed', to: 'draft', label: 'Volver a borrador' },
+    { from: 'cancelled', to: 'draft', label: 'Volver a borrador' },
+];
+
+export const allStatuses = [
+    { value: 'draft', label: 'Borrador' },
+    { value: 'published', label: 'Publicado' },
+    { value: 'active', label: 'Activo' },
+    { value: 'completed', label: 'Completado' },
+    { value: 'cancelled', label: 'Cancelado' },
 ];
 
 export const agendaTypeConfig = {

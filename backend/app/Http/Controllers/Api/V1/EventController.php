@@ -13,7 +13,7 @@ class EventController extends Controller
     {
         $query = Event::withoutGlobalScopes()
             ->where('status', '!=', 'draft')
-            ->with(['organization:id,name,slug,logo_path,primary_color']);
+            ->with(['organization']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -58,7 +58,7 @@ class EventController extends Controller
             ->where('slug', $slug)
             ->where('status', '!=', 'draft')
             ->with([
-                'organization:id,name,slug,logo_path,primary_color',
+                'organization',
                 'speakers' => fn ($q) => $q->where('status', 'confirmed')->orderBy('sort_order'),
                 'sponsors' => fn ($q) => $q->whereIn('status', ['confirmed', 'paid'])->orderBy('sort_order'),
                 'sponsors.sponsorLevel:id,name',
