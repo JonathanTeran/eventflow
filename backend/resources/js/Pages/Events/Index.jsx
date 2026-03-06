@@ -118,6 +118,7 @@ export default function EventsIndex({ events, filters, isSuperAdmin }) {
                 return (
                     <SpaceBetween direction="horizontal" size="xs">
                         <ButtonDropdown
+                            expandToViewport
                             items={[
                                 { id: 'view', text: 'Ver detalles' },
                                 { id: 'edit', text: 'Editar' },
