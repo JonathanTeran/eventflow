@@ -70,6 +70,7 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes (shared)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::get('/logout', [LoginController::class, 'destroy']);
 });
 
 // Admin routes (super_admin only)

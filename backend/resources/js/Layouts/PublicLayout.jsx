@@ -1,11 +1,17 @@
 import '@cloudscape-design/global-styles/index.css';
 import '@/styles/public-layout.css';
-import { usePage } from '@inertiajs/react';
+import { usePage, router } from '@inertiajs/react';
 import TopNavigation from '@cloudscape-design/components/top-navigation';
 
 export default function PublicLayout({ children, isPreview }) {
     const { auth } = usePage().props;
     const user = auth?.user;
+
+    function handleMenuClick(e) {
+        if (e.detail.id === 'logout') {
+            router.post('/logout');
+        }
+    }
 
     const utilities = user
         ? [
@@ -13,9 +19,10 @@ export default function PublicLayout({ children, isPreview }) {
                   type: 'menu-dropdown',
                   text: `${user.first_name} ${user.last_name}`,
                   iconName: 'user-profile',
+                  onItemClick: handleMenuClick,
                   items: [
                       { id: 'dashboard', text: 'Dashboard', href: '/dashboard' },
-                      { id: 'logout', text: 'Cerrar sesion', href: '/logout' },
+                      { id: 'logout', text: 'Cerrar sesión' },
                   ],
               },
           ]

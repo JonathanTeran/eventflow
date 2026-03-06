@@ -167,9 +167,9 @@ export default function AdminDashboard({ stats, recent_organizations, recent_eve
                             actions={
                                 <Button
                                     variant="link"
-                                    onClick={() => router.visit('/admin/organizations')}
+                                    onClick={() => router.visit('/events')}
                                 >
-                                    Ver organizaciones
+                                    Ver todos los eventos
                                 </Button>
                             }
                         >
@@ -184,9 +184,7 @@ export default function AdminDashboard({ stats, recent_organizations, recent_eve
                                 <Link
                                     onFollow={(e) => {
                                         e.preventDefault();
-                                        router.visit(
-                                            `/admin/organizations/${item.organization?.id}`
-                                        );
+                                        router.visit(`/events/${item.id}`);
                                     }}
                                 >
                                     {item.name}

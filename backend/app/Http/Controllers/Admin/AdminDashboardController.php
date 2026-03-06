@@ -100,6 +100,11 @@ class AdminDashboardController extends Controller
             'users_by_role' => $usersByRole,
             'top_organizations' => $topOrganizations,
             'upcoming_events' => $upcomingEvents,
+            'recent_events' => Event::withoutGlobalScope('organization')
+                ->with('organization:id,name')
+                ->orderByDesc('created_at')
+                ->limit(10)
+                ->get(),
             'monthly_growth' => array_values($months),
             'recent_organizations' => Organization::withCount(['users', 'events'])
                 ->latest()
