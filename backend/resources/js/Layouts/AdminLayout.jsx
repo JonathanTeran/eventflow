@@ -19,6 +19,8 @@ export default function AdminLayout({ children }) {
         { type: 'link', text: 'Usuarios', href: '/admin/users' },
         { type: 'link', text: 'Eventos', href: '/events' },
         { type: 'divider' },
+        { type: 'link', text: 'Configuracion', href: '/admin/settings' },
+        { type: 'divider' },
         { type: 'link', text: 'Volver a la app', href: '/dashboard' },
     ];
 

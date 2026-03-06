@@ -91,6 +91,11 @@ class Event extends Model
         return $this->hasMany(EventReminder::class);
     }
 
+    public function communications(): HasMany
+    {
+        return $this->hasMany(Communication::class);
+    }
+
     public function registeredCount(): int
     {
         return $this->participants()->where('status', '!=', 'cancelled')->count();

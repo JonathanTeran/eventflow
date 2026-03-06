@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminOrganizationController;
+use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ImpersonationController;
 use App\Http\Controllers\Auth\LoginController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\PublicEventController;
 use App\Http\Controllers\PublicHomeController;
 use App\Http\Controllers\PublicSurveyController;
+use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\ScannerController;
 use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
@@ -93,6 +95,11 @@ Route::middleware(['auth', 'super_admin'])->prefix('admin')->name('admin.')->gro
         ->name('impersonate.start');
     Route::delete('impersonate', [ImpersonationController::class, 'stop'])
         ->name('impersonate.stop');
+
+    // Settings
+    Route::get('settings', [AdminSettingsController::class, 'edit'])->name('settings');
+    Route::put('settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+    Route::post('settings/test-smtp', [AdminSettingsController::class, 'testConnection'])->name('settings.test-smtp');
 });
 
 // Organization-level routes (requires org context)
@@ -179,6 +186,13 @@ Route::middleware(['auth', 'has_organization'])->group(function () {
         Route::get('agenda/{agendaItem}/edit', [AgendaItemController::class, 'edit'])->name('agenda.edit');
         Route::put('agenda/{agendaItem}', [AgendaItemController::class, 'update'])->name('agenda.update');
         Route::delete('agenda/{agendaItem}', [AgendaItemController::class, 'destroy'])->name('agenda.destroy');
+
+        // Communications
+        Route::get('communications', [CommunicationController::class, 'index'])->name('communications.index');
+        Route::get('communications/create', [CommunicationController::class, 'create'])->name('communications.create');
+        Route::post('communications', [CommunicationController::class, 'store'])->name('communications.store');
+        Route::get('communications/{communication}', [CommunicationController::class, 'show'])->name('communications.show');
+        Route::delete('communications/{communication}', [CommunicationController::class, 'destroy'])->name('communications.destroy');
 
         // Surveys
         Route::get('surveys', [SurveyController::class, 'index'])->name('surveys.index');

@@ -17,6 +17,7 @@ export default function EventLayout({ event, actions, children }) {
         { id: 'sponsors', label: 'Sponsors', href: `/events/${event.id}/sponsors` },
         { id: 'communities', label: 'Comunidades', href: `/events/${event.id}/communities` },
         { id: 'agenda', label: 'Agenda', href: `/events/${event.id}/agenda` },
+        { id: 'communications', label: 'Comunicaciones', href: `/events/${event.id}/communications` },
         { id: 'surveys', label: 'Encuestas', href: `/events/${event.id}/surveys` },
         { id: 'scanner', label: 'Scanner', href: `/events/${event.id}/scanner` },
     ];
