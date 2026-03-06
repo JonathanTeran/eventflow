@@ -18,7 +18,10 @@ class EventController extends Controller
     {
         $this->authorize('viewAny', Event::class);
 
+        $isSuperAdmin = $request->user()->isSuperAdmin();
+
         $events = Event::query()
+            ->when($isSuperAdmin, fn ($q) => $q->with('organization:id,name'))
             ->when($request->search, fn ($q, $search) => $q->where('name', 'ilike', "%{$search}%"))
             ->when($request->status, fn ($q, $status) => $q->where('status', $status))
             ->orderByDesc('date_start')
@@ -28,6 +31,7 @@ class EventController extends Controller
         return Inertia::render('Events/Index', [
             'events' => $events,
             'filters' => $request->only(['search', 'status']),
+            'isSuperAdmin' => $isSuperAdmin,
         ]);
     }
 

@@ -14,6 +14,10 @@ class EventPolicy
 
     public function view(User $user, Event $event): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         return $user->can('events.view')
             && $user->currentOrganizationId() === $event->organization_id;
     }
@@ -25,12 +29,20 @@ class EventPolicy
 
     public function update(User $user, Event $event): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         return $user->can('events.update')
             && $user->currentOrganizationId() === $event->organization_id;
     }
 
     public function delete(User $user, Event $event): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         return $user->can('events.delete')
             && $user->currentOrganizationId() === $event->organization_id;
     }

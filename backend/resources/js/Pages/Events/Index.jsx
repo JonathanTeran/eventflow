@@ -22,7 +22,7 @@ const statusOptions = [
     { value: 'cancelled', label: 'Cancelado' },
 ];
 
-export default function EventsIndex({ events, filters }) {
+export default function EventsIndex({ events, filters, isSuperAdmin }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [status, setStatus] = useState(
         statusOptions.find((o) => o.value === (filters?.status || '')) || statusOptions[0]
@@ -73,7 +73,7 @@ export default function EventsIndex({ events, filters }) {
                 header={
                     <Header
                         variant="h1"
-                        description="Gestiona todos los eventos de tu organización."
+                        description={isSuperAdmin ? 'Gestiona todos los eventos de la plataforma.' : 'Gestiona todos los eventos de tu organización.'}
                         actions={
                             <Button variant="primary" iconName="add-plus" onClick={() => router.visit('/events/create')}>
                                 Crear evento
@@ -96,6 +96,11 @@ export default function EventsIndex({ events, filters }) {
                         </Link>
                     ),
                     sections: [
+                        ...(isSuperAdmin ? [{
+                            id: 'organization',
+                            header: 'Organización',
+                            content: (item) => item.organization?.name || '-',
+                        }] : []),
                         {
                             id: 'status',
                             header: 'Estado',

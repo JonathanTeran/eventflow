@@ -16,9 +16,9 @@ class EnsureHasOrganization
             return $next($request);
         }
 
-        // Super admin without impersonation: redirect to admin panel
-        if ($user->hasRole('super_admin') && ! session()->has('impersonating_organization_id')) {
-            return redirect()->route('admin.dashboard');
+        // Super admin: always allowed (sees all orgs)
+        if ($user->hasRole('super_admin')) {
+            return $next($request);
         }
 
         // Regular user without organization
