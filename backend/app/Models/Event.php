@@ -18,7 +18,6 @@ class Event extends Model
     protected $appends = ['cover_image_url'];
 
     protected $fillable = [
-        'organization_id',
         'name',
         'slug',
         'description',

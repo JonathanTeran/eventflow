@@ -15,7 +15,7 @@ export default function AgendaCreate({ event, speakers }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',
-        date: '',
+        date: event.date_start ? event.date_start.slice(0, 10) : '',
         start_time: '',
         end_time: '',
         speaker_id: '',
@@ -101,6 +101,8 @@ export default function AgendaCreate({ event, speakers }) {
                                         type="date"
                                         value={data.date}
                                         onChange={({ detail }) => setData('date', detail.value)}
+                                        min={event.date_start ? event.date_start.slice(0, 10) : undefined}
+                                        max={event.date_end ? event.date_end.slice(0, 10) : undefined}
                                     />
                                 </FormField>
 

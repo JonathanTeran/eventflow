@@ -14,6 +14,10 @@ class DashboardController extends Controller
 {
     public function __invoke(): Response
     {
+        if (! request()->user()->can('events.view')) {
+            abort(403);
+        }
+
         // 1. Events by Month (Bar Chart)
         $monthlyEvents = Event::select('date_start')
             ->where('date_start', '>=', now()->subMonths(5)->startOfMonth())

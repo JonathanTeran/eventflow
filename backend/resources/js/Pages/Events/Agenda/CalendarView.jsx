@@ -6,18 +6,15 @@ import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import { formatDate } from '@/utils/formatters';
+import { agendaTypeConfig } from '@/utils/status-config';
 
 const HOUR_HEIGHT = 60;
 const SNAP_MINUTES = 15;
 
-const TYPE_COLORS = {
-    talk:       { border: '#0972d3', bg: '#f0f5ff' },
-    workshop:   { border: '#037f0c', bg: '#f0fdf0' },
-    break:      { border: '#8D6B94', bg: '#f5f5f5' },
-    networking: { border: '#E07941', bg: '#fff7ed' },
-    ceremony:   { border: '#D63384', bg: '#fdf2f8' },
-};
-const DEFAULT_COLOR = { border: '#0972d3', bg: '#f0f5ff' };
+const TYPE_COLORS = Object.fromEntries(
+    Object.entries(agendaTypeConfig).map(([k, v]) => [k, { border: v.border, bg: v.bg }])
+);
+const DEFAULT_COLOR = { border: '#0972d3', bg: '#e8f0fe' };
 
 function parseMinutes(timeStr) {
     if (!timeStr) return null;
@@ -43,6 +40,18 @@ export default function CalendarView({ localItemsByDate, sortedDates, event, spe
     const [drag, setDrag] = useState(null);
     const columnRefs = useRef({});
     const gridRef = useRef(null);
+
+    const isMultiDay = event.date_start && event.date_end &&
+        event.date_start.slice(0, 10) !== event.date_end.slice(0, 10);
+
+    function dayLabel(dateKey) {
+        const label = formatDate(dateKey);
+        if (!isMultiDay) return label;
+        const start = new Date(event.date_start.slice(0, 10));
+        const current = new Date(dateKey);
+        const dayNum = Math.round((current - start) / 86400000) + 1;
+        return `Día ${dayNum} – ${label}`;
+    }
 
     const { startHour, endHour, scheduledByDate, unscheduled } = useMemo(() => {
         let minMin = Infinity;
@@ -220,7 +229,7 @@ export default function CalendarView({ localItemsByDate, sortedDates, event, spe
                                 whiteSpace: 'nowrap',
                             }}
                         >
-                            {formatDate(dateKey)}
+                            {dayLabel(dateKey)}
                         </div>
                     ))}
 
@@ -404,7 +413,7 @@ function SessionBlock({ item, startHour, event, speakers, onDelete, onDragStart,
         return found ? `${found.first_name} ${found.last_name}` : null;
     }, [item, speakers]);
 
-    const timeRange = [item.start_time, item.end_time].filter(Boolean).join(' – ');
+    const timeRange = [item.start_time, item.end_time].filter(Boolean).map((t) => t.slice(0, 5)).join(' – ');
 
     useEffect(() => {
         if (!popoverOpen) return;

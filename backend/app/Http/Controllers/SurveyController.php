@@ -61,7 +61,6 @@ class SurveyController extends Controller
         ]);
 
         $survey = $event->surveys()->create([
-            'organization_id' => Auth::user()->currentOrganizationId(),
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'type' => $validated['type'],

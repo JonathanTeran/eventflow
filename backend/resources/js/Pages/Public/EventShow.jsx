@@ -2,6 +2,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { formatDateLong } from '@/utils/formatters';
+import { agendaTypeConfig } from '@/utils/status-config';
 import PublicMapViewer from '@/Components/PublicMapViewer';
 
 function getInitials(name) {
@@ -113,13 +114,7 @@ function getSlotIndex(startTime, minHour) {
     return (h - minHour) * 2 + (m >= 30 ? 1 : 0);
 }
 
-const TYPE_COLORS = {
-    talk: { bg: '#e8f0fe', border: '#0972d3', text: '#033160' },
-    workshop: { bg: '#e6f4ea', border: '#1e8e3e', text: '#0d652d' },
-    break: { bg: '#f1f3f4', border: '#9aa0a6', text: '#5f6368' },
-    networking: { bg: '#fef3e0', border: '#f9a825', text: '#7c4a00' },
-    ceremony: { bg: '#f3e8fd', border: '#8430ce', text: '#4a0e78' },
-};
+const TYPE_COLORS = agendaTypeConfig;
 
 function groupSponsorsByLevel(sponsors, levels) {
     const grouped = {};

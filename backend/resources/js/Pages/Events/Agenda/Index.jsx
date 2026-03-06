@@ -12,6 +12,7 @@ import Select from '@cloudscape-design/components/select';
 import ConfirmModal from '@/Components/ConfirmModal';
 import CalendarView from './CalendarView';
 import { formatDate } from '@/utils/formatters';
+import { agendaTypeConfig } from '@/utils/status-config';
 import {
     DndContext,
     closestCenter,
@@ -159,6 +160,18 @@ export default function AgendaIndex({ event, agendaItemsByDate, speakers }) {
 
     const sortedDates = Object.keys(filteredItemsByDate).sort();
 
+    const isMultiDay = event.date_start && event.date_end &&
+        event.date_start.slice(0, 10) !== event.date_end.slice(0, 10);
+
+    function dayLabel(dateKey) {
+        const label = formatDate(dateKey);
+        if (!isMultiDay) return label;
+        const start = new Date(event.date_start.slice(0, 10));
+        const current = new Date(dateKey);
+        const dayNum = Math.round((current - start) / 86400000) + 1;
+        return `Día ${dayNum} – ${label}`;
+    }
+
     // Use full data for delete lookup (item may be filtered out)
     const allItems = Object.values(localItemsByDate).flat();
     const deletingItem = allItems.find((i) => i.id === deletingId);
@@ -171,8 +184,8 @@ export default function AgendaIndex({ event, agendaItemsByDate, speakers }) {
 
     function timeRange(item) {
         const parts = [];
-        if (item.start_time) parts.push(item.start_time);
-        if (item.end_time) parts.push(item.end_time);
+        if (item.start_time) parts.push(item.start_time.slice(0, 5));
+        if (item.end_time) parts.push(item.end_time.slice(0, 5));
         return parts.join(' – ');
     }
 
@@ -232,7 +245,7 @@ export default function AgendaIndex({ event, agendaItemsByDate, speakers }) {
                         key={dateKey}
                         header={
                             <Header variant="h2">
-                                {formatDate(dateKey)}
+                                {dayLabel(dateKey)}
                             </Header>
                         }
                     >
@@ -304,11 +317,14 @@ function SortableAgendaItemRow({ item, timeRange, speakerName, event, onDelete }
         opacity: isDragging ? 0.5 : 1,
     };
 
+    const typeConfig = agendaTypeConfig[item.type];
+    const borderColor = typeConfig ? typeConfig.border : '#0972d3';
+
     return (
         <div ref={setNodeRef} style={style}>
             <div
                 style={{
-                    borderLeft: '3px solid #0972d3',
+                    borderLeft: `3px solid ${borderColor}`,
                     paddingLeft: 16,
                     paddingTop: 4,
                     paddingBottom: 4,
@@ -369,6 +385,22 @@ function SortableAgendaItemRow({ item, timeRange, speakerName, event, onDelete }
                                 <Box fontSize="body-s">
                                     <strong>Lugar:</strong> {item.location_detail}
                                 </Box>
+                            )}
+                            {typeConfig && (
+                                <span
+                                    style={{
+                                        display: 'inline-block',
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        color: typeConfig.text,
+                                        background: typeConfig.bg,
+                                        border: `1px solid ${typeConfig.border}`,
+                                        borderRadius: 4,
+                                        padding: '1px 8px',
+                                    }}
+                                >
+                                    {typeConfig.label}
+                                </span>
                             )}
                         </SpaceBetween>
 

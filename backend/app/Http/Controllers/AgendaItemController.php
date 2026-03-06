@@ -86,11 +86,19 @@ class AgendaItemController extends Controller
             'speaker_id' => ['nullable', 'string', Rule::exists('speakers', 'id')],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
-            'date' => ['required', 'date'],
+            'date' => [
+                'required',
+                'date',
+                'after_or_equal:' . $event->date_start->toDateString(),
+                'before_or_equal:' . $event->date_end->toDateString(),
+            ],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'location_detail' => ['nullable', 'string', 'max:255'],
             'type' => ['required', Rule::in(['talk', 'workshop', 'break', 'networking', 'ceremony'])],
+        ], [
+            'date.after_or_equal' => 'La fecha debe estar dentro del rango del evento.',
+            'date.before_or_equal' => 'La fecha debe estar dentro del rango del evento.',
         ]);
 
         $agendaItem->update($validated);
@@ -117,9 +125,17 @@ class AgendaItemController extends Controller
         $this->authorize('update', $event);
 
         $validated = $request->validate([
-            'date' => ['required', 'date'],
+            'date' => [
+                'required',
+                'date',
+                'after_or_equal:' . $event->date_start->toDateString(),
+                'before_or_equal:' . $event->date_end->toDateString(),
+            ],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+        ], [
+            'date.after_or_equal' => 'La fecha debe estar dentro del rango del evento.',
+            'date.before_or_equal' => 'La fecha debe estar dentro del rango del evento.',
         ]);
 
         $agendaItem->update($validated);

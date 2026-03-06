@@ -57,12 +57,11 @@ prod-down: ## Stop production stack
 
 prod-deploy: ## Full deploy: pull, rebuild, restart
 	@git pull origin main
-	@docker compose -f docker-compose.prod.yml build --no-cache
-	@docker compose -f docker-compose.prod.yml up -d
-	@docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
-	@docker compose -f docker-compose.prod.yml exec -T app php artisan config:cache
-	@docker compose -f docker-compose.prod.yml exec -T app php artisan route:cache
-	@docker compose -f docker-compose.prod.yml exec -T app php artisan view:cache
+	@docker compose -f docker-compose.prod.yml up -d --build app scheduler
+	@docker restart eventflow-nginx
+	@echo "Waiting for app to be ready..."
+	@sleep 5
+	@docker logs eventflow-app --tail 15
 	@echo "\n  Deploy completed!\n"
 
 prod-logs: ## View production logs

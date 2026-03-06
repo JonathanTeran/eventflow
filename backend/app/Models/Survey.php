@@ -14,7 +14,6 @@ class Survey extends Model
     use BelongsToOrganization, HasUlid, SoftDeletes;
 
     protected $fillable = [
-        'organization_id',
         'event_id',
         'title',
         'description',

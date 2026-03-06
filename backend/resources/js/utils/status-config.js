@@ -26,3 +26,11 @@ export const statusActions = [
     { from: 'draft', to: 'cancelled', label: 'Cancelar', danger: true },
     { from: 'published', to: 'cancelled', label: 'Cancelar', danger: true },
 ];
+
+export const agendaTypeConfig = {
+    talk:       { label: 'Charla',     border: '#0972d3', bg: '#e8f0fe', text: '#033160' },
+    workshop:   { label: 'Taller',     border: '#1e8e3e', bg: '#e6f4ea', text: '#0d652d' },
+    break:      { label: 'Descanso',   border: '#9aa0a6', bg: '#f1f3f4', text: '#5f6368' },
+    networking: { label: 'Networking',  border: '#f9a825', bg: '#fef3e0', text: '#7c4a00' },
+    ceremony:   { label: 'Ceremonia',  border: '#8430ce', bg: '#f3e8fd', text: '#4a0e78' },
+};

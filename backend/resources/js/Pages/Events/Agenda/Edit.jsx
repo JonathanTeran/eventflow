@@ -108,6 +108,8 @@ export default function AgendaEdit({ event, agendaItem, speakers }) {
                                             type="date"
                                             value={data.date}
                                             onChange={({ detail }) => setData('date', detail.value)}
+                                            min={event.date_start ? event.date_start.slice(0, 10) : undefined}
+                                            max={event.date_end ? event.date_end.slice(0, 10) : undefined}
                                         />
                                     </FormField>
 

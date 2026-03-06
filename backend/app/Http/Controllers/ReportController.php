@@ -18,6 +18,10 @@ class ReportController extends Controller
      */
     public function index(Request $request): Response
     {
+        if (! request()->user()->can('events.view')) {
+            abort(403);
+        }
+
         // Get all events for the current organization to populate a selector if needed
         $eventsList = Event::select('id', 'name', 'date_start', 'status')
             ->orderByDesc('date_start')

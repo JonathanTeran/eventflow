@@ -141,8 +141,9 @@ export default function NetworkingDirectory({ event, participants, savedContactI
                                 key={i}
                                 href={link.url}
                                 className={`directory-pagination__link ${link.active ? 'directory-pagination__link--active' : ''} ${!link.url ? 'directory-pagination__link--disabled' : ''}`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
+                            >
+                                {link.label.replace(/&laquo;/g, '\u00AB').replace(/&raquo;/g, '\u00BB')}
+                            </a>
                         ))}
                     </div>
                 )}
