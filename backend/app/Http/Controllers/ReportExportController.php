@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Organization;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,7 @@ class ReportExportController extends Controller
             ->sum('attended_count');
 
         $pdf = Pdf::loadView('pdf.report-organization', [
-            'organization' => $user->organization ?? (object) ['name' => 'Mi Organizacion'],
+            'organization' => Organization::find($organizationId) ?? (object) ['name' => 'Mi Organizacion'],
             'events' => $events,
             'totalEvents' => $totalEvents,
             'totalParticipants' => $totalParticipants,

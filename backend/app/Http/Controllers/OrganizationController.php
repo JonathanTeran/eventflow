@@ -10,9 +10,20 @@ use Inertia\Response;
 
 class OrganizationController extends Controller
 {
+    private function currentOrganization(): Organization
+    {
+        $orgId = auth()->user()->currentOrganizationId();
+
+        if (! $orgId) {
+            abort(403, 'No hay contexto de organización. Usa la función de impersonar desde el panel admin.');
+        }
+
+        return Organization::findOrFail($orgId);
+    }
+
     public function edit(): Response
     {
-        $organization = auth()->user()->organization;
+        $organization = $this->currentOrganization();
 
         return Inertia::render('Organizations/Edit', [
             'organization' => $organization,
@@ -21,7 +32,7 @@ class OrganizationController extends Controller
 
     public function update(Request $request)
     {
-        $organization = auth()->user()->organization;
+        $organization = $this->currentOrganization();
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -45,7 +56,7 @@ class OrganizationController extends Controller
             'logo' => ['required', 'image', 'max:2048'],
         ]);
 
-        $organization = auth()->user()->organization;
+        $organization = $this->currentOrganization();
 
         $path = $request->file('logo')->store(
             "organizations/{$organization->id}",

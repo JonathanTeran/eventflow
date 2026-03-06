@@ -65,6 +65,7 @@ class SurveyController extends Controller
             'description' => $validated['description'] ?? null,
             'type' => $validated['type'],
             'status' => 'draft',
+            'organization_id' => $event->organization_id,
         ]);
 
         foreach ($validated['questions'] as $index => $questionData) {

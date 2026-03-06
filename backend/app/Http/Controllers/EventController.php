@@ -35,15 +35,24 @@ class EventController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $this->authorize('create', Event::class);
+
+        if (! $request->user()->currentOrganizationId()) {
+            return redirect()->route('events.index')
+                ->with('error', 'Debes impersonar una organización para crear eventos.');
+        }
 
         return Inertia::render('Events/Create');
     }
 
     public function store(StoreEventRequest $request)
     {
+        if (! $request->user()->currentOrganizationId()) {
+            return back()->with('error', 'Debes impersonar una organización para crear eventos.');
+        }
+
         $event = Event::create($request->safe()->except('cover_image'));
 
         if ($request->hasFile('cover_image')) {

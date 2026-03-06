@@ -21,7 +21,7 @@ class StoreEventRequest extends FormRequest
                 'string',
                 'max:255',
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
-                Rule::unique('events')->where('organization_id', $this->user()->organization_id),
+                Rule::unique('events')->where('organization_id', $this->user()->currentOrganizationId()),
             ],
             'description' => ['nullable', 'string', 'max:5000'],
             'date_start' => ['required', 'date'],

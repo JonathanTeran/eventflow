@@ -24,7 +24,7 @@ class UpdateEventRequest extends FormRequest
                 'max:255',
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
                 Rule::unique('events')
-                    ->where('organization_id', $this->user()->organization_id)
+                    ->where('organization_id', $event->organization_id)
                     ->ignore($event->id),
             ],
             'description' => ['nullable', 'string', 'max:5000'],

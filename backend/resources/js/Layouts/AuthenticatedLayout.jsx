@@ -9,15 +9,21 @@ import FlashNotifications from '@/Components/FlashNotifications';
 import ImpersonationBanner from '@/Components/ImpersonationBanner';
 
 export default function AuthenticatedLayout({ children }) {
-    const { user, organization, isSuperAdmin } = useAuth();
+    const { user, organization, isSuperAdmin, impersonation } = useAuth();
     const { isActive } = useActiveUrl();
     const [navOpen, setNavOpen] = useState(true);
+
+    const hasOrgContext = !!organization || !!impersonation;
 
     const navItems = [
         { type: 'link', text: 'Dashboard', href: '/dashboard' },
         { type: 'link', text: 'Eventos', href: '/events' },
         { type: 'link', text: 'Reportes', href: '/reports' },
-        { type: 'link', text: 'Organización', href: '/organization' },
+        ...(hasOrgContext ? [{ type: 'link', text: 'Organización', href: '/organization' }] : []),
+        ...(isSuperAdmin ? [
+            { type: 'divider' },
+            { type: 'link', text: 'Panel Admin', href: '/admin/dashboard' },
+        ] : []),
     ];
 
     function handleNavFollow(e) {
@@ -75,7 +81,7 @@ export default function AuthenticatedLayout({ children }) {
                 navigation={
                     <SideNavigation
                         header={{
-                            text: organization?.name || 'BuilderApp',
+                            text: impersonation?.organization_name || organization?.name || 'BuilderApp',
                             href: '/dashboard',
                         }}
                         activeHref={activeHref}
