@@ -3,7 +3,7 @@ import Container from '@cloudscape-design/components/container';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import StatusBadge from '@/Components/StatusBadge';
-import { formatDate, formatTime } from '@/utils/formatters';
+import { formatEventDateRange } from '@/utils/formatters';
 
 export default function EventCard({ event }) {
     return (
@@ -25,7 +25,7 @@ export default function EventCard({ event }) {
                     )}
                     <SpaceBetween size="xxs">
                         <Box variant="small" color="text-body-secondary">
-                            {formatDate(event.date_start)} &middot; {formatTime(event.date_start)}
+                            {formatEventDateRange(event.date_start, event.date_end)}
                         </Box>
                         {(event.location || event.venue) && (
                             <Box variant="small" color="text-body-secondary">

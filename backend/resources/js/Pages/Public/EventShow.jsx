@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
-import { formatDateLong } from '@/utils/formatters';
+import { formatDateLong, formatEventDateRange } from '@/utils/formatters';
 import { agendaTypeConfig } from '@/utils/status-config';
 import PublicMapViewer from '@/Components/PublicMapViewer';
 
@@ -12,13 +12,6 @@ function getInitials(name) {
         .slice(0, 2)
         .join('')
         .toUpperCase();
-}
-
-function formatDateRange(start, end) {
-    const s = formatDateLong(start);
-    const e = end ? formatDateLong(end) : null;
-    if (!e || s === e) return s;
-    return `${s} - ${e}`;
 }
 
 function groupAgendaByDate(items) {
@@ -314,7 +307,7 @@ export default function EventShow({ event, speakers, sponsors, agendaItems, spon
                                         <line x1="8" y1="2" x2="8" y2="6" />
                                         <line x1="3" y1="10" x2="21" y2="10" />
                                     </svg>
-                                    {formatDateRange(event.date_start, event.date_end)}
+                                    {formatEventDateRange(event.date_start, event.date_end)}
                                 </span>
                             )}
                             {(event.location || event.venue) && (
@@ -399,7 +392,7 @@ export default function EventShow({ event, speakers, sponsors, agendaItems, spon
                                 <div>
                                     <div className="event-info-strip__label">Fecha</div>
                                     <div className="event-info-strip__value">
-                                        {formatDateRange(event.date_start, event.date_end)}
+                                        {formatEventDateRange(event.date_start, event.date_end)}
                                     </div>
                                 </div>
                             </div>

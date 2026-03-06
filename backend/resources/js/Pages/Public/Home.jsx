@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
-import { formatDateLong } from '@/utils/formatters';
+import { formatEventDateRange } from '@/utils/formatters';
 import { useState } from 'react';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
@@ -15,13 +15,6 @@ import Link from '@cloudscape-design/components/link';
 import Icon from '@cloudscape-design/components/icon';
 import Pagination from '@cloudscape-design/components/pagination';
 import TextFilter from '@cloudscape-design/components/text-filter';
-
-function formatDateRange(start, end) {
-    const s = formatDateLong(start);
-    const e = end ? formatDateLong(end) : null;
-    if (!e || s === e) return s;
-    return `${s} - ${e}`;
-}
 
 function getMonthDay(dateString) {
     if (!dateString) return null;
@@ -201,7 +194,7 @@ export default function Home({ events, search }) {
                                         header: 'Fecha',
                                         content: (event) =>
                                             event.date_start
-                                                ? formatDateRange(event.date_start, event.date_end)
+                                                ? formatEventDateRange(event.date_start, event.date_end)
                                                 : '-',
                                     },
                                     {

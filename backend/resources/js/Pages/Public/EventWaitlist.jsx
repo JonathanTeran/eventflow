@@ -1,13 +1,6 @@
 import { Head } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
-import { formatDateLong } from '@/utils/formatters';
-
-function formatDateRange(start, end) {
-    const s = formatDateLong(start);
-    const e = end ? formatDateLong(end) : null;
-    if (!e || s === e) return s;
-    return `${s} - ${e}`;
-}
+import { formatEventDateRange } from '@/utils/formatters';
 
 export default function EventWaitlist({ event, participant, position }) {
     return (
@@ -58,7 +51,7 @@ export default function EventWaitlist({ event, participant, position }) {
                                         <line x1="8" y1="2" x2="8" y2="6" />
                                         <line x1="3" y1="10" x2="21" y2="10" />
                                     </svg>
-                                    {formatDateRange(event.date_start, event.date_end)}
+                                    {formatEventDateRange(event.date_start, event.date_end)}
                                 </span>
                             )}
                             {(event.location || event.venue) && (

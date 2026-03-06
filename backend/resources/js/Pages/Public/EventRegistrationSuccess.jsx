@@ -2,14 +2,7 @@ import { Head } from '@inertiajs/react';
 import { QRCodeSVG } from 'qrcode.react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { formatDateLong } from '@/utils/formatters';
-
-function formatDateRange(start, end) {
-    const s = formatDateLong(start);
-    const e = end ? formatDateLong(end) : null;
-    if (!e || s === e) return s;
-    return `${s} - ${e}`;
-}
+import { formatEventDateRange } from '@/utils/formatters';
 
 /* ── Digital Ticket Generator (Canvas) ── */
 
@@ -108,7 +101,7 @@ function generateTicketImage(qrSvgElement, event, participant) {
         ctx.fillStyle = 'rgba(255,255,255,0.75)';
         ctx.font = `500 ${11 * scale}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
         if (event.date_start) {
-            wrapText(ctx, formatDateRange(event.date_start, event.date_end), W / 2, ty, innerW - pad * 2, 16 * scale);
+            wrapText(ctx, formatEventDateRange(event.date_start, event.date_end), W / 2, ty, innerW - pad * 2, 16 * scale);
             ty += 18 * scale;
         }
         if (event.venue || event.location) {
@@ -356,7 +349,7 @@ export default function EventRegistrationSuccess({ event, participant, networkin
                                         <line x1="8" y1="2" x2="8" y2="6" />
                                         <line x1="3" y1="10" x2="21" y2="10" />
                                     </svg>
-                                    {formatDateRange(event.date_start, event.date_end)}
+                                    {formatEventDateRange(event.date_start, event.date_end)}
                                 </span>
                             )}
                             {(event.location || event.venue) && (

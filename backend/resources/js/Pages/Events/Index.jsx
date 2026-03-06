@@ -11,7 +11,7 @@ import Pagination from '@cloudscape-design/components/pagination';
 import Box from '@cloudscape-design/components/box';
 import Link from '@cloudscape-design/components/link';
 import StatusBadge from '@/Components/StatusBadge';
-import { formatDate, formatTime } from '@/utils/formatters';
+import { formatEventDateRange } from '@/utils/formatters';
 
 const statusOptions = [
     { value: '', label: 'Todos los estados' },
@@ -105,7 +105,7 @@ export default function EventsIndex({ events, filters }) {
                             id: 'date',
                             header: 'Fecha',
                             content: (item) =>
-                                `${formatDate(item.date_start)} · ${formatTime(item.date_start)}`,
+                                formatEventDateRange(item.date_start, item.date_end),
                         },
                         {
                             id: 'location',

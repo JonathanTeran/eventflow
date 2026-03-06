@@ -2,16 +2,9 @@ import { Head, useForm } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import SearchableSelect from '@/Components/SearchableSelect';
 import PhoneInput from '@/Components/PhoneInput';
-import { formatDateLong } from '@/utils/formatters';
+import { formatEventDateRange } from '@/utils/formatters';
 import { getCountryOptions, getCityOptions, getPhoneCode } from '@/data/locations';
 import { useState } from 'react';
-
-function formatDateRange(start, end) {
-    const s = formatDateLong(start);
-    const e = end ? formatDateLong(end) : null;
-    if (!e || s === e) return s;
-    return `${s} - ${e}`;
-}
 
 export default function EventRegister({ event, spotsLeft, registeredCount }) {
     const isFull = spotsLeft !== null && spotsLeft <= 0;
@@ -57,7 +50,7 @@ export default function EventRegister({ event, spotsLeft, registeredCount }) {
                     <h1 className="register-header__title">{event.name}</h1>
                     <div className="register-header__meta">
                         {event.date_start && (
-                            <span>{formatDateRange(event.date_start, event.date_end)}</span>
+                            <span>{formatEventDateRange(event.date_start, event.date_end)}</span>
                         )}
                         {(event.location || event.venue) && (
                             <span>{[event.venue, event.location].filter(Boolean).join(', ')}</span>

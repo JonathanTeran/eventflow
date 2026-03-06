@@ -5,7 +5,7 @@ import Tabs from '@cloudscape-design/components/tabs';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import StatusBadge from '@/Components/StatusBadge';
-import { formatDateLong } from '@/utils/formatters';
+import { formatEventDateRange } from '@/utils/formatters';
 
 export default function EventLayout({ event, actions, children }) {
     const { url } = usePage();
@@ -39,10 +39,10 @@ export default function EventLayout({ event, actions, children }) {
     }
 
     const description = [
-        formatDateLong(event.date_start),
+        formatEventDateRange(event.date_start, event.date_end),
         event.location,
         event.venue,
-    ].filter(Boolean).join(' \u00b7 ');
+    ].filter(Boolean).join(' · ');
 
     return (
         <AuthenticatedLayout>
