@@ -50,11 +50,10 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Download the standalone FrankenPHP binary that Octane expects
-# (the base image binary is Caddy+FrankenPHP, Octane needs the standalone worker)
-RUN curl -fsSL -o /app/frankenphp "https://github.com/dunglas/frankenphp/releases/latest/download/frankenphp-linux-$(uname -m)" && \
-    chmod +x /app/frankenphp && \
-    /app/frankenphp version
+# Make FrankenPHP binary available for Octane
+# The base image has it at /usr/local/bin/frankenphp (Caddy+FrankenPHP)
+# Octane looks for ./frankenphp in the project root first
+RUN cp /usr/local/bin/frankenphp /app/frankenphp && chmod +x /app/frankenphp
 
 # Supervisor config for Octane + Queue Worker + Reverb
 COPY docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
