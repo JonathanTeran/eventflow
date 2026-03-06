@@ -26,6 +26,11 @@ class PublicEventController extends Controller
 
         $isPreview = $request->hasValidSignature();
 
+        // Fallback: admin autenticado con permiso puede previsualizar
+        if (! $isPreview && auth()->check()) {
+            $isPreview = auth()->user()->can('update', $event);
+        }
+
         if (! $isPreview && ! in_array($event->status, ['published', 'active'])) {
             throw new NotFoundHttpException;
         }

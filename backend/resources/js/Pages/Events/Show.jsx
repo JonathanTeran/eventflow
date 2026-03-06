@@ -19,13 +19,15 @@ import { statusActions } from '@/utils/status-config';
 export default function EventShow({ event, previewUrl }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingLevel, setEditingLevel] = useState(null);
-    const statusForm = useForm({ status: '' });
+    const [changingStatus, setChangingStatus] = useState(false);
     const sponsorLevelForm = useForm({ name: '', price: '' });
     const editLevelForm = useForm({ name: '', price: '' });
 
     function changeStatus(newStatus) {
-        statusForm.setData('status', newStatus);
-        statusForm.patch(`/events/${event.id}/status`);
+        router.patch(`/events/${event.id}/status`, { status: newStatus }, {
+            onStart: () => setChangingStatus(true),
+            onFinish: () => setChangingStatus(false),
+        });
     }
 
     function deleteEvent() {
@@ -70,7 +72,7 @@ export default function EventShow({ event, previewUrl }) {
                     key={action.to}
                     variant={action.danger ? 'normal' : 'primary'}
                     onClick={() => changeStatus(action.to)}
-                    loading={statusForm.processing}
+                    loading={changingStatus}
                 >
                     {action.label}
                 </Button>

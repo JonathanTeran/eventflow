@@ -113,4 +113,18 @@ class AdminUserController extends Controller
 
         return back()->with('success', 'Usuario desactivado exitosamente.');
     }
+
+    public function destroy(User $user): RedirectResponse
+    {
+        if ($user->hasRole('super_admin')) {
+            return back()->with('error', 'No se puede eliminar un super administrador.');
+        }
+
+        \App\Models\ParticipantScan::where('scanned_by', $user->id)
+            ->update(['scanned_by' => null]);
+
+        $user->forceDelete();
+
+        return back()->with('success', 'Usuario eliminado exitosamente.');
+    }
 }
