@@ -52,8 +52,7 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 
 # Download the standalone FrankenPHP binary that Octane expects
 # (the base image binary is Caddy+FrankenPHP, Octane needs the standalone worker)
-RUN ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/') && \
-    curl -fsSL -o /app/frankenphp "https://github.com/dunglas/frankenphp/releases/latest/download/frankenphp-linux-${ARCH}" && \
+RUN curl -fsSL -o /app/frankenphp "https://github.com/dunglas/frankenphp/releases/latest/download/frankenphp-linux-$(uname -m)" && \
     chmod +x /app/frankenphp && \
     /app/frankenphp version
 
